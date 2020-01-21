@@ -77,5 +77,5 @@ class JobRequestor {
         });
     }
 }
-exports.JobRequestor = JobRequestor;
+exports.default = JobRequestor;
 //# sourceMappingURL=index.js.map

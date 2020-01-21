@@ -6,7 +6,7 @@ import EventEmitter from 'events';
  * JobRequestor is in charge of receiving job requests and posting them to the Redis messaging server.
  * In order to know when a job is properly accepted, you must be subscribed to jobRequestorInstance.responseNotifier's "accepted" event.
  */
-export declare class JobRequestor {
+export default class JobRequestor {
     private channels;
     /**
      * JobRequestor is in charge of receiving job requests and posting them to the Redis messaging server.

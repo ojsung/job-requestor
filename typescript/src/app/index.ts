@@ -11,7 +11,7 @@ import { PubSubMaker } from './pub-sub-maker'
  * JobRequestor is in charge of receiving job requests and posting them to the Redis messaging server.
  * In order to know when a job is properly accepted, you must be subscribed to jobRequestorInstance.responseNotifier's "accepted" event.
  */
-export class JobRequestor {
+export default class JobRequestor {
   /**
    * JobRequestor is in charge of receiving job requests and posting them to the Redis messaging server.
    * In order to know when a job is properly accepted, you must be subscribed to jobRequestorInstance.responseNotifier's "accepted" event.
