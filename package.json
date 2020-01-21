@@ -1,0 +1,83 @@
+{
+  "name": "job-requestor",
+  "version": "1.0.0",
+  "description": "Publishes to Redis pubsub channels to post job requests.  Manages awaiting the responses and re-requesting.",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsc -d && node ./src_js/index.js",
+    "start": "tsnd --respawn ./src/app/index.ts",
+    "tsc": "tsc",
+    "lint": "standardx **/*.ts",
+    "lintfix": "standardx **/*.ts --fix",
+    "dev": "tsnd --respawn ./src/app/index.ts  --transpileOnly",
+    "prod": "tsc && node ./build/index.js",
+    "redis": "redis-server %HOMEPATH%/Redis/redis.conf"
+  },
+  "eslintConfig": {
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error",
+      "no-extend-native": "off",
+      "space-before-function-paren": [
+        "error",
+        {
+          "anonymous": "always",
+          "named": "never",
+          "asyncArrow": "always"
+        }
+      ],
+      "@typescript-eslint/no-use-before-define": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
+      "@typescript-eslint/member-delimiter-style": [
+        "error",
+        {
+          "multiline": {
+            "delimiter": "none",
+            "requireLast": false
+          },
+          "singleline": {
+            "delimiter": "comma",
+            "requireLast": false
+          }
+        }
+      ],
+      "node/no-unsupported-features/es-syntax": "off"
+    }
+  },
+  "standardx": {
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint/eslint-plugin"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ojsung/job-requestor.git"
+  },
+  "keywords": [
+    "node",
+    "redis",
+    "pubsub",
+    "microservice"
+  ],
+  "author": "ojsung",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ojsung/job-requestor/issues"
+  },
+  "homepage": "https://github.com/ojsung/job-requestor#readme",
+  "devDependencies": {
+    "@types/node": "13.1.2",
+    "@types/redis": "2.8.14",
+    "@typescript-eslint/eslint-plugin": "2.14.0",
+    "@typescript-eslint/parser": "2.14.0",
+    "standardx": "5.0.0",
+    "ts-node-dev": "1.0.0-pre.44",
+    "typescript": "3.7.4"
+  },
+  "dependencies": {
+    "redis": "2.8.0",
+    "retrieve-ip": "git+https://github.com/ojsung/node-ip-retriever.git"
+  }
+}
