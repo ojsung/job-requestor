@@ -4,7 +4,7 @@ import { IChannelContainer } from './models/channel-container.interface'
 import retrieveIp from 'retrieve-ip'
 import EventEmitter from 'events'
 import { IChannelIdentifier } from './models/channel-identifier.interface'
-import { ConstructionValidator } from './construction-validator'
+import ConstructionValidator from 'pubsub-construction-validator'
 import { PubSubMaker } from './pub-sub-maker'
 
 /**
