@@ -63,23 +63,21 @@ export class PubSubMaker {
       if (!this.identifier.targetIp && messageAsObj.params === 'reporting') {
         this.identifier.targetIp = messageAsObj.responderIp
         this.respondToReporters(this.pubChannel)
-        // In the case of timeouts (like if the acceptor accepted a different job), the parent will handle rerequesting.
-        // This class just needs to make sure its identifier's targetIp is clear so that it is ready to accept another job.
-        if (this.deleteTargetIp) clearTimeout(this.deleteTargetIp)
-        this.deleteTargetIp = this.targetIpDeleter()
-      }
-      if (
-        messageAsObj.params === 'accepting' &&
+      } else if (
+        // If these fields are filled out in the message object, it means that it is not the first message
         this.identifier.targetIp &&
-        this.identifier.targetIp === messageAsObj.responderIp &&
-        this.identifier.jobId === messageAsObj.jobId
+        this.identifier.targetIp === messageAsObj.responderIp
       ) {
-        // Acknowledge that the job has been accepted, and emit the acceptor's identifying information object.
-        if (this.deleteTargetIp) clearTimeout(this.deleteTargetIp)
-        this.respondToAcceptors(this.pubChannel)
-        // Now that we've received the response telling us the job has been accepted, we can remove our listener
-        this.subscriber.removeListener('message', this.callbackTracker[this.identifier.jobId])
-        this.responseNotifier.emit('accepted', messageAsObj)
+        // Check if the message is an acceptance message and that it is meant for this poster's job
+        if (messageAsObj.params === 'accepting') {
+          if (this.identifier.jobId === messageAsObj.jobId) {
+          // Acknowledge that the job has been accepted, and emit the acceptor's identifying information object.
+          if (this.deleteTargetIp) clearTimeout(this.deleteTargetIp)
+            this.respondToAcceptors(this.pubChannel, messageAsObj)
+          } else {
+            this.recastForReporters()
+          }
+        }
       }
     }
   }
@@ -96,11 +94,27 @@ export class PubSubMaker {
   private respondToReporters(pubChannel: string) {
     const acceptanceIdentifier = { ...this.identifier, params: 'accept' }
     this.publisher.publish(pubChannel, JSON.stringify(acceptanceIdentifier))
+    // In the case of timeouts (like if the acceptor accepted a different job), the parent will handle rerequesting.
+    // This class just needs to make sure its identifier's targetIp is clear so that it is ready to accept another job.
+    if (this.deleteTargetIp) clearTimeout(this.deleteTargetIp)
+    this.deleteTargetIp = this.targetIpDeleter()
   }
 
   // Send out a message to the responder, acknowledging that they have accepted the job.  Sends the message "confirmed"
-  private respondToAcceptors(pubChannel: string) {
+  private respondToAcceptors(pubChannel: string, messageAsObj: IChannelIdentifier) {
     const confirmationIdentifier = { ...this.identifier, params: 'confirmed' }
     this.publisher.publish(pubChannel, JSON.stringify(confirmationIdentifier))
+    // Now that we've received the response telling us the job has been accepted, we can remove our listener
+    this.subscriber.removeListener('message', this.callbackTracker[this.identifier.jobId])
+    this.responseNotifier.emit('accepted', messageAsObj)
+  }
+
+  private recastForReporters() {
+    // Clear out the target IP to allow for a new target, then recast for a job acceptor
+    delete this.identifier.targetIp
+    this.publisher.publish(this.pubChannel, JSON.stringify(this.identifier))
+    // Reset the timeout counter
+    if (this.deleteTargetIp) clearTimeout(this.deleteTargetIp)
+    this.deleteTargetIp = this.targetIpDeleter()
   }
 }

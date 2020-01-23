@@ -53,7 +53,7 @@ The constructor takes the following parameters:
 /**
  * JobRequestor is in charge of receiving job requests and posting them to the Redis messaging server.
  * In order to know when a job is properly accepted, you must be subscribed to jobRequestorInstance.responseNotifier's "accepted" event.
- * @param channels An array of IChannelInfo to which the JobRequestor may need to post
+ * @param channels An array of IChannelInfo to which the JobRequestor may need to post. 
  * @param [publisher] Optional.  If it is not provided, the 'options' paramter must be given.  A RedisClient instance that is NOT set as a subscriber
  * @param [subscriber] Optional. If it is not provided, but publisher is, it will be duplicated from the publisher.  If publisher is not provided, then the
  * 'options' parameter must be given.
@@ -64,7 +64,7 @@ The constructor takes the following parameters:
 ### Example
 
 ```typescript
-import { createClient, ClientOpts } from 'redis'
+import { createClient, ClientOpts, RedisClient } from 'redis'
 import { JobRequestor, IChannelInfo, IChannelIdentifier } from 'job-requestor'
 const channels: IChannelInfo[] = [
   {
@@ -84,7 +84,7 @@ const clientOpts: ClientOpts = {
   host: 'localhost',
   port: 3000
 }
-const publisher = createClient(clientOpts)
+const publisher: RedisClient = createClient(clientOpts)
 const jobRequestor: JobRequestor = new JobRequestor(channels, publisher)
 jobRequestor.responseNotifier.on('accepted', (identifier: IChannelIdentifier) => {
   const channel = identifier.channel

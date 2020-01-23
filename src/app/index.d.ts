@@ -1,2 +1,3 @@
 import { JobRequestor } from './job-requestor';
-export { JobRequestor as default };
+import { IChannelInfo, IChannelIdentifier } from 'base-job-handler';
+export { JobRequestor as default, IChannelInfo, IChannelIdentifier };

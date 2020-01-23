@@ -42,4 +42,5 @@ export declare class PubSubMaker {
     private targetIpDeleter;
     private respondToReporters;
     private respondToAcceptors;
+    private recastForReporters;
 }
