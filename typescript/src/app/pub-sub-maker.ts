@@ -1,6 +1,6 @@
-import { IChannelIdentifier } from './models/channel-identifier.interface'
 import { RedisClient } from 'redis'
 import { EventEmitter } from 'events'
+import { IChannelIdentifier, IMessageCallback } from 'base-job-handler'
 
 /**
  * This class will handle the callbacks for a single job posting to the Redis messaging system.
@@ -15,13 +15,13 @@ export class PubSubMaker {
    * @param identifier The identifying information for the job itself
    */
   constructor(
-    private publisher: RedisClient,
-    private subscriber: RedisClient,
-    private pubChannel: string,
-    private subChannel: string,
-    private identifier: IChannelIdentifier
+    private readonly publisher: RedisClient,
+    private readonly subscriber: RedisClient,
+    private readonly pubChannel: string,
+    private readonly subChannel: string,
+    private readonly identifier: IChannelIdentifier
   ) {}
-  // Properties
+
   public readonly responseNotifier: EventEmitter = new EventEmitter()
 
   // I would like to leave this undefined, but my linter is complaining about it. Don't @ me
@@ -31,17 +31,21 @@ export class PubSubMaker {
   // so that listeners can be deleted by name later without deleting all listeners
   private callbackTracker: { [key: string]: (param1: string, param2: string) => void } = {}
 
-  // Methods
   /**
    * This is the only public method for this class.  It creates a dynamically named callback function, and then adds it as a
    * listener to the 'message' event on the subscriber.
    */
   public listenForAcceptors() {
-    this.callbackTracker = {
-      ...this.callbackTracker,
-      [this.identifier.jobId]: (responseChannel: string, message: string) =>
-        this.subscriberListener(responseChannel, message)
-    }
+    const newListener: IMessageCallback = (responseChannel: string, message: string) =>
+      this.subscriberListener(responseChannel, message)
+    Object.defineProperty(newListener, 'name', {
+      value: this.identifier.jobId,
+      writable: false,
+      enumerable: false,
+      configurable: true
+    })
+    this.callbackTracker[this.identifier.jobId] = newListener
+
     this.subscriber.on('message', this.callbackTracker[this.identifier.jobId])
   }
 
@@ -51,7 +55,7 @@ export class PubSubMaker {
    * @param responseChannel This is passed by the subscriber's "message" event.  The name of the channel where the job was heard
    * @param message This is passed by the subscriber's "message" event.  The message that was sent.  Should be parseable into JSON.
    */
-  private subscriberListener (responseChannel: string, message: string) {
+  private subscriberListener(responseChannel: string, message: string) {
     const messageAsObj: IChannelIdentifier = JSON.parse(message)
     // Make sure that the response is meant for this specific listener
     if (responseChannel === this.subChannel && messageAsObj.jobId === this.identifier.jobId) {
@@ -65,7 +69,7 @@ export class PubSubMaker {
         this.deleteTargetIp = this.targetIpDeleter()
       }
       if (
-        messageAsObj.params === 'accepted' &&
+        messageAsObj.params === 'accepting' &&
         this.identifier.targetIp &&
         this.identifier.targetIp === messageAsObj.responderIp &&
         this.identifier.jobId === messageAsObj.jobId

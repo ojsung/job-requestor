@@ -19,7 +19,6 @@ class PubSubMaker {
         this.pubChannel = pubChannel;
         this.subChannel = subChannel;
         this.identifier = identifier;
-        // Properties
         this.responseNotifier = new events_1.EventEmitter();
         // I would like to leave this undefined, but my linter is complaining about it. Don't @ me
         this.deleteTargetIp = setTimeout(() => { }, 0);
@@ -27,16 +26,19 @@ class PubSubMaker {
         // so that listeners can be deleted by name later without deleting all listeners
         this.callbackTracker = {};
     }
-    // Methods
     /**
      * This is the only public method for this class.  It creates a dynamically named callback function, and then adds it as a
      * listener to the 'message' event on the subscriber.
      */
     listenForAcceptors() {
-        this.callbackTracker = {
-            ...this.callbackTracker,
-            [this.identifier.jobId]: (responseChannel, message) => this.subscriberListener(responseChannel, message)
-        };
+        const newListener = (responseChannel, message) => this.subscriberListener(responseChannel, message);
+        Object.defineProperty(newListener, 'name', {
+            value: this.identifier.jobId,
+            writable: false,
+            enumerable: false,
+            configurable: true
+        });
+        this.callbackTracker[this.identifier.jobId] = newListener;
         this.subscriber.on('message', this.callbackTracker[this.identifier.jobId]);
     }
     /**
@@ -59,7 +61,7 @@ class PubSubMaker {
                     clearTimeout(this.deleteTargetIp);
                 this.deleteTargetIp = this.targetIpDeleter();
             }
-            if (messageAsObj.params === 'accepted' &&
+            if (messageAsObj.params === 'accepting' &&
                 this.identifier.targetIp &&
                 this.identifier.targetIp === messageAsObj.responderIp &&
                 this.identifier.jobId === messageAsObj.jobId) {

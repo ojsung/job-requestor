@@ -68,17 +68,18 @@
   },
   "homepage": "https://github.com/ojsung/job-requestor#readme",
   "devDependencies": {
-    "@types/node": "13.1.2",
-    "@types/redis": "2.8.14",
-    "@typescript-eslint/eslint-plugin": "2.14.0",
-    "@typescript-eslint/parser": "2.14.0",
-    "standardx": "5.0.0",
-    "ts-node-dev": "1.0.0-pre.44",
-    "typescript": "3.7.4"
+    "@types/node": "^13.1.2",
+    "@types/redis": "^2.8.14",
+    "@typescript-eslint/eslint-plugin": "^2.14.0",
+    "@typescript-eslint/parser": "^2.14.0",
+    "standardx": "^5.0.0",
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
+    "base-job-handler": "git+https://github.com/ojsung/base-job-handler.git",
     "pubsub-construction-validator": "git+https://github.com/ojsung/pubsub-construction-validator.git",
-    "redis": "2.8.0",
+    "redis": "^2.8.0",
     "retrieve-ip": "git+https://github.com/ojsung/node-ip-retriever.git"
   }
 }

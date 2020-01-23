@@ -1,16 +1,16 @@
 /// <reference types="node" />
-import { IChannelIdentifier } from './models/channel-identifier.interface';
 import { RedisClient } from 'redis';
 import { EventEmitter } from 'events';
+import { IChannelIdentifier } from 'base-job-handler';
 /**
  * This class will handle the callbacks for a single job posting to the Redis messaging system.
  */
 export declare class PubSubMaker {
-    private publisher;
-    private subscriber;
-    private pubChannel;
-    private subChannel;
-    private identifier;
+    private readonly publisher;
+    private readonly subscriber;
+    private readonly pubChannel;
+    private readonly subChannel;
+    private readonly identifier;
     /**
      * This class will handle the callbacks for a single job posting to the Redis messaging system.
      * @param publisher  Redis Client set as a publisher
