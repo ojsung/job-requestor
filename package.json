@@ -68,7 +68,7 @@
   },
   "homepage": "https://github.com/ojsung/job-requestor#readme",
   "devDependencies": {
-    "@types/node": "^13.1.2",
+    "@types/node": "13.5.0",
     "@types/redis": "^2.8.14",
     "@typescript-eslint/eslint-plugin": "^2.14.0",
     "@typescript-eslint/parser": "^2.14.0",

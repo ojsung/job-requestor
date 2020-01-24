@@ -54,8 +54,8 @@ class JobRequestor extends base_job_handler_1.default {
         const channel = filledChannelContainer[jobType];
         if (!channel)
             throw new Error('That job type does not exist in the channel list given at construction.');
-        const pubChannel = channel + '-pub';
-        const subChannel = channel + '-sub';
+        const pubChannel = channel.channel + '-post';
+        const subChannel = channel.channel + '-accept';
         const pubSubMaker = new pub_sub_maker_1.PubSubMaker(this.publisher, this.subscriber, pubChannel, subChannel, identifier);
         pubSubMaker.listenForAcceptors();
         const callForAcceptors = setInterval(() => this.publisher.publish(pubChannel, JSON.stringify(identifier)), channel.reRequest ? channel.reRequest : 5000);

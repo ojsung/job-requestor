@@ -56,8 +56,8 @@ export class JobRequestor extends BaseJobHandler {
     const channel = filledChannelContainer[jobType]
     if (!channel)
       throw new Error('That job type does not exist in the channel list given at construction.')
-    const pubChannel = channel + '-pub'
-    const subChannel = channel + '-sub'
+    const pubChannel = channel.channel + '-post'
+    const subChannel = channel.channel + '-accept'
     const pubSubMaker: PubSubMaker = new PubSubMaker(
       this.publisher,
       this.subscriber,
